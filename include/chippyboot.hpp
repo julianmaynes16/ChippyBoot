@@ -24,7 +24,7 @@ class ChippyBoot{
          * @brief Define custom starting location for ROM
          * @param location Location in memory where ROM data begins
          */
-        static void defineRomLocation(int location)
+        static void defineRomLocation(int location);
 
 
     private:
