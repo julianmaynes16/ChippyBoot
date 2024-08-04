@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdint>
+#include <string>
 #include <chippyboot.hpp>
 
 //bitmap fonts
@@ -282,5 +283,29 @@ uint8_t* letterToHex(char letter, uint8_t** bitfont){
             break;
     }
 
+char* lettersInString(std::string text){
+    char* letters_used = {};
+    bool letter_used_flag = False;
+    for(char letter : text){
+        if(strlen(strlenletters_used) == 0){
+            letters_used.push_back(letter);
+        }
+        else{
+            for(char used_letter : letters_used){
+                if(strcmp(letter, used_letter) == 0){
+                    letter_used_flag = True
+                }
+            }
+            if(!letter_used_flag){
+                letters_used.push_back(letter);
+            }
+
+        }
+    }
+
+
+
+
+}
 
 }
