@@ -90,7 +90,7 @@ uint8_t bitfont4x4[rep_digits][4] = {
 //uint8_t bitfont5x5[36][5] = {};
 
 
-uint8_t* letterToHex(char letter, uint8_t** bitfont){
+uint8_t* ChippyBoot::letterToHex(char letter, uint8_t** bitfont){
     switch(letter){
         case 'A':
             return bitfont[0];
@@ -282,18 +282,19 @@ uint8_t* letterToHex(char letter, uint8_t** bitfont){
             return bitfont[37];
             break;
     }
-
-char* lettersInString(std::string text){
-    char* letters_used = {};
-    bool letter_used_flag = False;
-    for(char letter : text){
-        if(strlen(strlenletters_used) == 0){
+}
+std::string ChippyBoot::lettersInString(std::string text){
+    std::string letters_used;
+    bool letter_used_flag = false;
+    for(char letter_reg : text){
+        char letter = toupper(letter_reg);
+        if(letters_used.length() == 0){
             letters_used.push_back(letter);
         }
         else{
             for(char used_letter : letters_used){
-                if(strcmp(letter, used_letter) == 0){
-                    letter_used_flag = True
+                if(letter == used_letter){
+                    letter_used_flag = true;
                 }
             }
             if(!letter_used_flag){
@@ -302,10 +303,9 @@ char* lettersInString(std::string text){
 
         }
     }
-
-
-
-
+    return letters_used;
 }
 
-}
+
+
+
