@@ -10,13 +10,13 @@ class ChippyBoot{
         };
         /**
          * @brief Creates the screen data to be used on bootup, waiting for a delay before reading ROM
-         * @param texts An array of textloc aobjects containing text and their desired locations
+         * @param texts An array of textloc objects containing text and their desired locations
          * @param delay The amount of cycles before bootup ends and the actual ROM executess (0-255)
          */
         static void createBootupText(textloc* texts, uint8_t delay);
         /**
          * @brief Creates the screen data to be used on bootup, waiting for button press before reading ROM
-         * @param texts An array of textloc aobjects containing text and their desired locations
+         * @param texts An array of textloc objects containing text and their desired locations
          * @param button The button that, when pressed, exits out of the bootup screen
          */
         static void createBootupText(textloc* texts, char button);
