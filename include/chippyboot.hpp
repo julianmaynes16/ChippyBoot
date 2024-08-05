@@ -49,6 +49,13 @@ class ChippyBoot{
 
     private:
 
+        struct letterloc {
+            char letter;
+            uint16_t location;
+        };
+
+        static letterloc ChippyBoot::createLetterloc(char letter, uint16_t location);
+
         const static uint8_t rep_digits = 37;
         const static uint8_t num_fonts = 2;
         const static uint16_t drawing_location = 0x012C;
@@ -77,13 +84,13 @@ class ChippyBoot{
 
 
         /**
-         * @brief Returns the Y coord from a string location and increments respective letter index
+         * @brief Returns the Y coord from a string location
          * @param location string location defined when a screentext object is made
          */
         static uint8_t xGet(screentext* text);
 
         /**
-         * @brief Returns the Y coord from a string location and increments respective letter index 
+         * @brief Returns the Y coord from a string location 
          * @param location string location defined when a screentext object is made
          */
         static uint8_t yGet(screentext* text);
@@ -108,4 +115,11 @@ class ChippyBoot{
          * @param size The user-designated size of the bitfont
          */
         static std::vector<std::vector<uint8_t>> sizeToBitmap(int size);
+
+        /**
+         * @brief Returns the memory address of a specific character
+         * @param text the specific screentext
+         * @param letterloc_array the array of letter and their respective locations
+         */
+        static uint16_t getLetterAddress(screentext* text, std::vector<letterloc> letterloc_array);
 };

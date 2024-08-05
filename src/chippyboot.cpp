@@ -322,7 +322,6 @@ uint8_t ChippyBoot::xGet(screentext* text){
     } else{
         xloc = 0x18 + (text->letter_index * text->size) + 1;
     }
-    incrementLetterIndex(text);
     return xloc;
 }
 
@@ -338,7 +337,6 @@ uint8_t ChippyBoot::yGet(screentext* text){
     }else{
         yloc = 0x14;
     }
-    incrementLetterIndex(text);
     return yloc;
 }
 
@@ -366,11 +364,31 @@ std::vector<std::vector<uint8_t>> ChippyBoot::sizeToBitmap(int size){
     }
 }
 
+ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter, uint16_t location){
+    letterloc new_letterloc;
+    new_letterloc.letter = letter;
+    new_letterloc.location = location;
+    return new_letterloc;
+}
+
+uint16_t ChippyBoot::getLetterAddress(screentext* text, std::vector<letterloc> letterloc_array){
+    uint16_t return_address;
+    for(int i = 0; i < letterloc_array.size(); i++){
+        if((text->text[text->letter_index]) == letterloc_array[i].letter){
+            return_address = letterloc_array[i].location;
+        }
+    }
+
+    incrementLetterIndex(text);
+    return return_address;
+}
+
 uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
     //initialize vars
     uint8_t bootup_memory[4096];
     uint16_t PC = 0;
     int size = sizeof(texts) / sizeof(texts[0]);
+    std::vector<letterloc> letterloc_array;
     //initialize jump point as first instruction
     bootup_memory[PC++] = getFirstDrawingByte(drawing_location);
     bootup_memory[PC++] = getSecondDrawingByte(drawing_location);
@@ -379,6 +397,7 @@ uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
         //contains all letters to be put in memory
         std::string letters = lettersInString(texts[i].text);
         for(char letter : letters){
+            letterloc_array.push_back(createLetterloc(letter,PC));
             //Gets the letter's corresponding hex characters
             std::vector<uint8_t> letter_hex_array = letterToHex(letter, sizeToBitmap(texts[i].size));
             //writes every byte to the memory
@@ -390,10 +409,13 @@ uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
     //Writes drawing code 
     PC = drawing_location;
     for(int i = 0; i < size; i++){
+        //writes coordinates
         bootup_memory[PC++] = 0x60;
         bootup_memory[PC++] = xGet(&texts[i]);
         bootup_memory[PC++] = 0x61;
         bootup_memory[PC++] = yGet(&texts[i]);
+        //writes I register setting
+        uint16_t char_address = getLetterAddress(&texts[i], letterloc_array); //
         bootup_memory[PC++] = 
     }
 }
