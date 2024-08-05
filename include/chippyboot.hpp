@@ -28,14 +28,14 @@ class ChippyBoot{
          * @param delay The amount of cycles before bootup ends and the actual ROM executess (0-255)
          * @return An array of 8 bit integers and of size 4096 (currently) that holds the data to be executed to show bootup screen 
          */
-        static uint8_t* createBootupText(screentext* texts, uint8_t delay);
+        static std::vector<uint8_t> createBootupText(std::vector<screentext> texts, uint8_t delay);
         /**
          * @brief Creates the screen data to be used on bootup, waiting for button press before reading ROM
          * @param texts An array of textloc objects containing text and their desired locations
          * @param button The button that, when pressed, exits out of the bootup screen
          * @return An array of 8 bit integers and of size 4096 (currently) that holds the data to be executed to show bootup screen 
          */
-        static uint8_t* createBootupText(screentext* texts, char button);
+        static std::vector<uint8_t> createBootupText(std::vector<screentext> texts, std::string button);
         /**
          * @brief Define custom starting location for ROM
          * @param location Location in memory where ROM data begins
@@ -57,10 +57,26 @@ class ChippyBoot{
 
         struct letterloc {
             char letter;
+            int size;
             uint16_t location;
         };
+        
+        struct charsizes {
+            std::string text;
+            std::vector<int> letter_size;
+            int index;
+        };
+        
 
-        static letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location);
+        static charsizes createCharsizes(std::string text, int size);
+
+        static void addToCharsizes(charsizes* input_charsizes, std::string input_text, int input_size);
+        
+        static void removeCharsizeRedundancies(charsizes* input_charsizes);
+
+        static void incrementCharsizeIndex(charsizes* charsizes);
+    
+        static letterloc createLetterloc(char letter_input, uint16_t location);
 
         const static uint8_t rep_digits = 37;
         const static uint8_t num_fonts = 2;
@@ -128,4 +144,7 @@ class ChippyBoot{
          * @param letterloc_array the array of letter and their respective locations
          */
         static uint16_t getLetterAddress(screentext* text, std::vector<letterloc> letterloc_array);
+
+        static void debug_printBootupText(std::vector<uint8_t> bootup_text);
+
 };
