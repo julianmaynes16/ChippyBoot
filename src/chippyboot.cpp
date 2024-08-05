@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <chippyboot.hpp>
 
 //bitmap fonts
@@ -8,7 +9,7 @@
 //one hex digit wide
 
 
-uint8_t ChippyBoot::bitfont3x3[rep_digits][3] = {
+std::vector<std::vector<uint8_t>> ChippyBoot::bitfont3x3 {
         {0x40, 0xE0, 0xA0},  
         {0xC0, 0xE0, 0xE0}, 
         {0xE0, 0x80, 0xE0},
@@ -46,7 +47,7 @@ uint8_t ChippyBoot::bitfont3x3[rep_digits][3] = {
         {0x60, 0xE0, 0xE0},
         {0xE0, 0xE0, 0x20},
         {0x00, 0x00, 0x00}};
-uint8_t ChippyBoot::bitfont4x4[ChippyBoot::rep_digits][4] = {
+std::vector<std::vector<uint8_t>> ChippyBoot::bitfont4x4 {
         {0x60, 0x90, 0xF0, 0x90},
         {0xE0, 0xF0, 0x90, 0xE0},
         {0x60, 0x90, 0x80, 0x70},
@@ -86,7 +87,7 @@ uint8_t ChippyBoot::bitfont4x4[ChippyBoot::rep_digits][4] = {
         {0x00, 0x00, 0x00, 0x00}};
 
 
-uint8_t* ChippyBoot::letterToHex(char letter, uint8_t** bitfont){
+std::vector<uint8_t> ChippyBoot::letterToHex(char letter, std::vector<std::vector<uint8_t>> bitfont){
     switch(letter){
         case 'A':
             return bitfont[0];
@@ -354,7 +355,7 @@ uint8_t ChippyBoot::getSecondDrawingByte(uint16_t drawing_location){
     return(drawing_location & 0x00FF);
 }
 
-uint8_t** ChippyBoot::sizeToBitmap(int size){
+std::vector<std::vector<uint8_t>> ChippyBoot::sizeToBitmap(int size){
     switch(size){
         case 3:
             return bitfont3x3;
@@ -378,12 +379,15 @@ uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
         //contains all letters to be put in memory
         std::string letters = lettersInString(texts[i].text);
         for(char letter : letters){
-            uint8_t* letter_hex_array = letterToHex(letter, sizeToBitmap(texts[i].size));
+            //Gets the letter's corresponding hex characters
+            std::vector<uint8_t> letter_hex_array = letterToHex(letter, sizeToBitmap(texts[i].size));
+            //writes every byte to the memory
+            for(uint8_t row : letter_hex_array){
+                bootup_memory[PC++] = row;
+            }
         }
     }
-    
-
-
+    //Writes drawing code 
     PC = drawing_location;
     for(int i = 0; i < size; i++){
         bootup_memory[PC++] = 0x60;

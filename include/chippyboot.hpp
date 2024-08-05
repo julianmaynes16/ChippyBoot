@@ -53,9 +53,9 @@ class ChippyBoot{
         const static uint8_t num_fonts = 2;
         const static uint16_t drawing_location = 0x012C;
         
-        static uint8_t bitfont3x3[rep_digits][3];
+        static std::vector<std::vector<uint8_t>> bitfont3x3;
 
-        static uint8_t bitfont4x4[rep_digits][4];
+        static std::vector<std::vector<uint8_t>> bitfont4x4;
 //uint8_t bitfont5x5[36][5] = {};
 
         /**
@@ -63,7 +63,7 @@ class ChippyBoot{
          * @param letter The desired letter you want to turn into hex
          * @param bitfont The bitmap size you want the letter to be outputted to
          */
-        static uint8_t* letterToHex(char letter, uint8_t** bitfont);
+        static std::vector<uint8_t> letterToHex(char letter, std::vector<std::vector<uint8_t>>);
         /**
          * @brief breaks up words into only their unique characters
          * @param text text to be broken up into one of each of its unique letters
@@ -107,5 +107,5 @@ class ChippyBoot{
          * @brief Returns the bitmap corresponding to the designated text size
          * @param size The user-designated size of the bitfont
          */
-        static uint8_t** sizeToBitmap(int size);
+        static std::vector<std::vector<uint8_t>> sizeToBitmap(int size);
 };
