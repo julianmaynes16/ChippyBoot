@@ -18,26 +18,29 @@ class ChippyBoot{
          * @param size The height of the text to be displayed (currently 3x3 pixels and 4x4 pixels)
          * @param location The location the text will be in. 
          * top_left, top_right, bottom_left, bottom_right, middle, sub_middle, bottom_middle 
+         * @return screentext object to be put in a list with other screentext objects and inputted in createBootupText
          */
-        static screentext createTextloc(std::string text, int size, std::string location);
+        static screentext createScreentext(std::string text, int size, std::string location);
 
         /**
          * @brief Creates the screen data to be used on bootup, waiting for a delay before reading ROM
          * @param texts An array of textloc objects containing text and their desired locations
          * @param delay The amount of cycles before bootup ends and the actual ROM executess (0-255)
+         * @return An array of 8 bit integers and of size 4096 (currently) that holds the data to be executed to show bootup screen 
          */
         static uint8_t* createBootupText(screentext* texts, uint8_t delay);
         /**
          * @brief Creates the screen data to be used on bootup, waiting for button press before reading ROM
          * @param texts An array of textloc objects containing text and their desired locations
          * @param button The button that, when pressed, exits out of the bootup screen
+         * @return An array of 8 bit integers and of size 4096 (currently) that holds the data to be executed to show bootup screen 
          */
         static uint8_t* createBootupText(screentext* texts, char button);
         /**
          * @brief Define custom starting location for ROM
          * @param location Location in memory where ROM data begins
          */
-        static void defineRomLocation(int location);
+        static void defineRomLocation(uint16_t location);
 
         /**
          * @brief Displays the Bootup screen and handles exiting
@@ -49,12 +52,15 @@ class ChippyBoot{
 
     private:
 
+
+        static uint16_t rom_start;
+
         struct letterloc {
             char letter;
             uint16_t location;
         };
 
-        static letterloc ChippyBoot::createLetterloc(char letter, uint16_t location);
+        static letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location);
 
         const static uint8_t rep_digits = 37;
         const static uint8_t num_fonts = 2;
@@ -63,7 +69,7 @@ class ChippyBoot{
         static std::vector<std::vector<uint8_t>> bitfont3x3;
 
         static std::vector<std::vector<uint8_t>> bitfont4x4;
-//uint8_t bitfont5x5[36][5] = {};
+        //uint8_t bitfont5x5[36][5] = {};
 
         /**
          * @brief Returns a series of hex numbers corresponding to the bitmap for a given character

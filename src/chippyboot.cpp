@@ -2,12 +2,14 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <chippyboot.hpp>
 
 //bitmap fonts
 // A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 0 1 2 3 4 5 6 7 8 9 [space]
 //one hex digit wide
 
+uint16_t ChippyBoot::rom_start = 0x200;
 
 std::vector<std::vector<uint8_t>> ChippyBoot::bitfont3x3 {
         {0x40, 0xE0, 0xA0},  
@@ -303,8 +305,9 @@ std::string ChippyBoot::lettersInString(std::string text){
     return letters_used;
 }
 
-ChippyBoot::screentext ChippyBoot::createTextloc(std::string text, int size, std::string location){
+ChippyBoot::screentext ChippyBoot::createScreentext(std::string text, int size, std::string location){
     ChippyBoot::screentext new_screentext;
+    std::transform(text.begin(), text.end(), text.begin(), ::toupper);
     new_screentext.text = text;
     new_screentext.size = size;
     new_screentext.location = location;
@@ -364,8 +367,9 @@ std::vector<std::vector<uint8_t>> ChippyBoot::sizeToBitmap(int size){
     }
 }
 
-ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter, uint16_t location){
+ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location){
     letterloc new_letterloc;
+    char letter = toupper(letter_input);
     new_letterloc.letter = letter;
     new_letterloc.location = location;
     return new_letterloc;
@@ -373,14 +377,19 @@ ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter, uint16_t location
 
 uint16_t ChippyBoot::getLetterAddress(screentext* text, std::vector<letterloc> letterloc_array){
     uint16_t return_address;
+    //Goes through each item in letterloc array
     for(int i = 0; i < letterloc_array.size(); i++){
+        //If the letter specified by the index equals the letter in letterloc, set return address to the letter's program counter
         if((text->text[text->letter_index]) == letterloc_array[i].letter){
             return_address = letterloc_array[i].location;
         }
     }
-
     incrementLetterIndex(text);
     return return_address;
+}
+
+void ChippyBoot::defineRomLocation(uint16_t location){
+    rom_start = location;
 }
 
 uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
@@ -409,14 +418,52 @@ uint8_t* ChippyBoot::createBootupText(screentext* texts, uint8_t delay){
     //Writes drawing code 
     PC = drawing_location;
     for(int i = 0; i < size; i++){
-        //writes coordinates
-        bootup_memory[PC++] = 0x60;
-        bootup_memory[PC++] = xGet(&texts[i]);
-        bootup_memory[PC++] = 0x61;
-        bootup_memory[PC++] = yGet(&texts[i]);
-        //writes I register setting
-        uint16_t char_address = getLetterAddress(&texts[i], letterloc_array); //
-        bootup_memory[PC++] = 
+        //Iterate through all letters in a string
+        while(texts[i].letter_index < texts[i].text.size()){
+            //writes coordinates
+            bootup_memory[PC++] = 0x60;
+            bootup_memory[PC++] = xGet(&texts[i]);
+            bootup_memory[PC++] = 0x61;
+            bootup_memory[PC++] = yGet(&texts[i]);
+            //writes I register setting
+            uint16_t char_address = getLetterAddress(&texts[i], letterloc_array); 
+            bootup_memory[PC++] = ((0xA000 | char_address) >> 8);
+            bootup_memory[PC++] = (char_address & 0x00FF);
+            //writes Draw command
+            bootup_memory[PC++] = 0xD0;
+            bootup_memory[PC++] = 0x10 + texts[i].size;
+            
+
+
+
+        }
     }
+    //Writes delay code
+    bootup_memory[PC++] = 0x65;
+    bootup_memory[PC++] = delay;
+    //Set delay timer to whats in register 5
+    bootup_memory[PC++] = 0xF5;
+    bootup_memory[PC++] = 0x15;
+    //Set register 5 to be whats the delay_register
+    uint16_t jump_point = PC;
+    bootup_memory[PC++] = 0xF5;
+    bootup_memory[PC++] = 0x07;
+    // Skip next instruction if delay timer runs out
+    bootup_memory[PC++] = 0x35;
+    bootup_memory[PC++] = 0x00;
+    //Defines jump point when delay isn't done
+    bootup_memory[PC++] = ((0x1000 | jump_point) >> 8);
+    bootup_memory[PC++] = (jump_point & 0x00FF);
+    //Clear register 5
+    bootup_memory[PC++] = 0x65;
+    bootup_memory[PC++] = 0x00;
+    //Clear screen
+    bootup_memory[PC++] = 0x00;
+    bootup_memory[PC++] = 0xE0;
+    //Go to actual program
+    bootup_memory[PC++] = ((0x1000 | rom_start) >> 8);
+    bootup_memory[PC++] = (rom_start & 0x00FF);
+
+    return bootup_memory;
 }
 
