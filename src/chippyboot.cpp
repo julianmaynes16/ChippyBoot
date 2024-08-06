@@ -11,45 +11,46 @@
 //one hex digit wide
 
 uint16_t ChippyBoot::rom_start = 0x200;
+uint16_t ChippyBoot::memory_start = 0x0A0;
 
 std::vector<std::vector<uint8_t>> ChippyBoot::bitfont3x3 {
-        {0x40, 0xE0, 0xA0},  
-        {0xC0, 0xE0, 0xE0}, 
-        {0xE0, 0x80, 0xE0},
-        {0xC0, 0xA0, 0xC0},
-        {0xE0, 0xC0, 0xE0},
-        {0xE0, 0xC0, 0x80},
-        {0xC0, 0xA0, 0xE0},
-        {0xA0, 0xE0, 0xA0},
-        {0xE0, 0x40, 0xE0},
-        {0x20, 0xA0, 0xE0},
-        {0xA0, 0xC0, 0xA0},
-        {0x80, 0x80, 0xE0},
-        {0xE0, 0xE0, 0xA0},
-        {0xE0, 0xA0, 0xA0},
-        {0xE0, 0xA0, 0xE0},
-        {0xE0, 0xE0, 0x80},
-        {0xE0, 0xE0, 0x20},
-        {0xE0, 0x80, 0x80},
-        {0x60, 0x40, 0xC0},
-        {0xE0, 0x40, 0x40},
-        {0xA0, 0xA0, 0xE0},
-        {0xA0, 0xA0,0x40},
-        {0xA0, 0xE0, 0xE0},
-        {0xA0, 0x40, 0xA0},
-        {0xA0, 0x40, 0x40},
-        {0xC0, 0x40, 0x60},
-        {0xE0, 0xA0, 0xE0},
-        {0xC0, 0x40, 0xE0},
-        {0xC0, 0x40, 0x60},
-        {0xE0, 0x60, 0xE0},
-        {0xA0, 0xE0, 0x20},
-        {0x60, 0x40, 0xC0},
-        {0x80, 0xE0, 0xE0},
-        {0xE0, 0x20, 0x20},
-        {0x60, 0xE0, 0xE0},
-        {0xE0, 0xE0, 0x20},
-        {0x00, 0x00, 0x00}};
+        {0x40, 0xE0, 0xA0},  //a
+        {0xC0, 0xE0, 0xE0},  //b
+        {0xE0, 0x80, 0xE0},  //c
+        {0xC0, 0xA0, 0xC0},  //d
+        {0xE0, 0xC0, 0xE0},  //e
+        {0xE0, 0xC0, 0x80},  //f
+        {0xC0, 0xA0, 0xE0},  //g
+        {0xA0, 0xE0, 0xA0},  //h
+        {0xE0, 0x40, 0xE0},  //i
+        {0x20, 0xA0, 0xE0},  //j
+        {0xA0, 0xC0, 0xA0},  //k
+        {0x80, 0x80, 0xE0},  //l
+        {0xE0, 0xE0, 0xA0},  //m
+        {0xE0, 0xA0, 0xA0},  //n
+        {0xE0, 0xA0, 0xE0},  //o
+        {0xE0, 0xE0, 0x80},  //p
+        {0xE0, 0xE0, 0x20},  //q
+        {0xE0, 0x80, 0x80},  //r
+        {0x60, 0x40, 0xC0},  //s
+        {0xE0, 0x40, 0x40},  //t
+        {0xA0, 0xA0, 0xE0},  //u
+        {0xA0, 0xA0, 0x40},  //v
+        {0xA0, 0xE0, 0xE0},  //w
+        {0xA0, 0x40, 0xA0},  //x
+        {0xA0, 0x40, 0x40},  //y
+        {0xC0, 0x40, 0x60},  //z
+        {0xE0, 0xA0, 0xE0},  //0
+        {0xC0, 0x40, 0xE0},  //1
+        {0xC0, 0x40, 0x60},  //2
+        {0xE0, 0x60, 0xE0},  //3
+        {0xA0, 0xE0, 0x20},  //4
+        {0x60, 0x40, 0xC0},  //5
+        {0x80, 0xE0, 0xE0},  //6
+        {0xE0, 0x20, 0x20},  //7
+        {0x60, 0xE0, 0xE0},  //8
+        {0xE0, 0xE0, 0x20},  //9
+        {0x00, 0x00, 0x00}}; //space
 std::vector<std::vector<uint8_t>> ChippyBoot::bitfont4x4 {
         {0x60, 0x90, 0xF0, 0x90}, //a
         {0xE0, 0xF0, 0x90, 0xE0}, //b
@@ -382,7 +383,6 @@ std::vector<std::vector<uint8_t>> ChippyBoot::sizeToBitmap(int size){
   * @param size the size of the letter
   */
 ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location, int size){
-    std::cout<< "Inputted letter: " << letter_input << std::endl; 
     letterloc new_letterloc;
     char letter = toupper(letter_input);
     //unique letter
@@ -433,7 +433,27 @@ void ChippyBoot::addToCharsizes(charsizes* input_charsizes, std::string input_te
 }
 
 void ChippyBoot::removeCharsizeRedundancies(charsizes* input_charsizes){
-    input_charsizes->text = lettersInString(input_charsizes->text);
+    std::string new_string = "";
+    std::vector<int> new_letter_size_array;
+    
+    for(int i = 0; i < input_charsizes->text.size(); i++){
+        bool unique_num_size = true;
+        
+        for(int j = 0; j < input_charsizes->text.size(); j++){
+            if(j > i){
+                if((input_charsizes->text[i] == input_charsizes->text[j]) && (input_charsizes->letter_size_array[i] == input_charsizes->letter_size_array[j]) && (i != j)){
+                    unique_num_size = false;
+                }
+            }
+        }
+        if(unique_num_size){
+            new_string += input_charsizes->text[i];
+            new_letter_size_array.push_back(input_charsizes->letter_size_array[i]);
+        }
+    }
+
+    input_charsizes->text = new_string;
+    input_charsizes->letter_size_array = new_letter_size_array;
 }
 
 //void ChippyBoot::incrementCharsizeIndex(charsizes* charsizes){
@@ -446,7 +466,7 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     uint16_t PC = 0;
     std::vector<letterloc> letterloc_array;
     charsizes charsizes;
-    //initialize jump point as first instruction
+    //initialize jump point at default point
     bootup_memory.insert(bootup_memory.begin() + PC++, getFirstDrawingByte(drawing_location));
     bootup_memory.insert(bootup_memory.begin() + PC++, getSecondDrawingByte(drawing_location));
 
@@ -464,23 +484,27 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
         
     }
     //TODO: Make system that will remove redundancies in shared letters across the same size
+    //std::cout << "Before: " << charsizes.text << std::endl;
+    removeCharsizeRedundancies(&charsizes);
+    //std::cout << "After: " << charsizes.text << std::endl;
+    //TODO: Also make sizing automatic
 
     //Hello(4) and World(3) would be Helo World
-    std::cout << charsizes.text << std::endl;
-    for(int i = 0; i < charsizes.letter_size_array.size(); i++){
-        std::cout << charsizes.letter_size_array[i] << std::endl;
-    }
+    
+    //for(int i = 0; i < charsizes.letter_size_array.size(); i++){
+    //    std::cout << charsizes.letter_size_array[i] << std::endl;
+    //}
     //isolate all unique characters
     //std::string letters = lettersInString(all_letters);
     //removeCharsizeRedundancies(&charsizes);
 
     //For all unique letters
-    std::cout << "Size: " << charsizes.text.size() << std::endl;
+    //std::cout << "Size: " << charsizes.text.size() << std::endl;
     for(int i = 0; i < charsizes.text.size(); i++){
         //Connect a letter and its size to a location in memory
         letterloc_array.push_back(createLetterloc(charsizes.text[i], PC, charsizes.letter_size_array[i]));
-        std::cout << letterloc_array[i].letter << std::endl;
-        std::cout << letterloc_array[i].size << std::endl;
+        //std::cout << letterloc_array[i].letter << std::endl;
+        //std::cout << letterloc_array[i].size << std::endl;
         //Gets the letter's corresponding hex characters
         std::vector<uint8_t> letter_hex_array = letterToHex(charsizes.text[i], sizeToBitmap(charsizes.letter_size_array[i]));
         
@@ -489,11 +513,15 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
             bootup_memory.insert(bootup_memory.begin() + PC++, row);
         }
     }
-    debug_printBootupText(bootup_memory);
+    
     //Writes drawing code 
-    while(PC < drawing_location){
-        bootup_memory.insert(bootup_memory.begin() + PC++, 0x00);
-    }
+    //while(PC < drawing_location){
+    //    bootup_memory.insert(bootup_memory.begin() + PC++, 0x00);
+    //}
+    //Replace first jump now to where the rest of the data will be. Used to account for many characters
+    bootup_memory[0x00] = getFirstDrawingByte(PC);
+    bootup_memory[0x01] = getSecondDrawingByte(PC);
+
     //Go through each text
     for(int i = 0; i < texts.size(); i++){
         //Iterate through all letters in a string
@@ -541,6 +569,16 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     debug_printBootupText(bootup_memory);
 
     return bootup_memory;
+}
+
+void ChippyBoot::loadBootupScreen(uint16_t* memory, std::vector<uint8_t> bootup_text){
+    for(int i = 0; i < bootup_text.size(); i++){
+        memory[memory_start + i] = bootup_text[i];
+    }
+}
+
+void ChippyBoot::runBootup(uint16_t* program_counter){
+    *program_counter = memory_start;
 }
 
 void ChippyBoot::debug_printBootupText(std::vector<uint8_t> bootup_text){

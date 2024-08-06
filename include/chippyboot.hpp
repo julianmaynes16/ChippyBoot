@@ -41,19 +41,25 @@ class ChippyBoot{
          * @param location Location in memory where ROM data begins
          */
         static void defineRomLocation(uint16_t location);
-
         /**
-         * @brief Displays the Bootup screen and handles exiting
-         * @param bootup_memory Memory predefined using createBootupText and to be executed
+         * @brief Loads data made from createBootupText into chip8 memory
+         * @warning SPRITE DATA MUST END AT OR BEFORE 0x0A0 IN MEMORY. DATA MAY BE OVERWRITTEN OTHERWISE
+         * @param memory The chip8 memory that contains sprites and the rom
+         * @param bootup_text Data created by createBootupText()  
+         */
+        static void loadBootupScreen(uint16_t* memory, std::vector<uint8_t> bootup_text);
+        /**
+         * @brief Displays the Bootup screen when execution starts and handles exiting
          * @param program_counter Chip8 program counter to be able to transition from bootup screen to a chip8 game
          */
-        static void runBootup(uint8_t* bootup_memory, uint16_t& program_counter);
+        static void runBootup(uint16_t* program_counter);
 
 
     private:
 
 
         static uint16_t rom_start;
+        static uint16_t memory_start;
 
         struct letterloc {
             char letter;
@@ -70,7 +76,10 @@ class ChippyBoot{
         static charsizes createCharsizes(std::string text, int size);
 
         static void addToCharsizes(charsizes* input_charsizes, std::string input_text, int input_size);
-        
+        /**
+         * @brief Removes letters from the input if there are other letters like it of the same size
+         * @param input_charsizes the input charsize to be trimmed
+         */
         static void removeCharsizeRedundancies(charsizes* input_charsizes);
 
         static void incrementCharsizeIndex(charsizes* charsizes);
