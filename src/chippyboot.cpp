@@ -285,22 +285,29 @@ std::vector<uint8_t> ChippyBoot::letterToHex(char letter, std::vector<std::vecto
 }
 std::string ChippyBoot::lettersInString(std::string text){
     std::string letters_used;
-    bool letter_used_flag = false;
+    
+    //For every letter in the given text
     for(char letter_reg : text){
+        bool letter_used_flag = false;
+        //make letter uppercase
         char letter = toupper(letter_reg);
+        //First letter
         if(letters_used.length() == 0){
             letters_used.push_back(letter);
         }
+        //Letters after 1st one
         else{
+            //Check every letters that have currently been used
             for(char used_letter : letters_used){
+                //If letter has been used
                 if(letter == used_letter){
                     letter_used_flag = true;
                 }
             }
+            //If letter hasn't been used, add it to letters used
             if(!letter_used_flag){
                 letters_used.push_back(letter);
             }
-
         }
     }
     return letters_used;
@@ -368,11 +375,22 @@ std::vector<std::vector<uint8_t>> ChippyBoot::sizeToBitmap(int size){
     }
 }
 
-ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location){
+ /**
+  * @brief Uses letter, size, and location data to make an object
+  * @param letter_input letter to be used
+  * @param location location in memory the letter will be
+  * @param size the size of the letter
+  */
+ChippyBoot::letterloc ChippyBoot::createLetterloc(char letter_input, uint16_t location, int size){
+    std::cout<< "Inputted letter: " << letter_input << std::endl; 
     letterloc new_letterloc;
     char letter = toupper(letter_input);
+    //unique letter
     new_letterloc.letter = letter;
+    //location in memory
     new_letterloc.location = location;
+    //size of letter
+    new_letterloc.size = size;
     return new_letterloc;
 }
 
@@ -398,7 +416,7 @@ ChippyBoot::charsizes ChippyBoot::createCharsizes(std::string text, int size){
     new_charsize.text = text;
 
     for(char letter : text){
-        new_charsize.letter_size.push_back(size);
+        new_charsize.letter_size_array.push_back(size);
     }
 
     return new_charsize;
@@ -409,7 +427,7 @@ void ChippyBoot::addToCharsizes(charsizes* input_charsizes, std::string input_te
     input_charsizes->text += input_text;
     //Adds new numbers in the old vector
     for(char letter : input_text){
-        input_charsizes->letter_size.push_back(input_size);
+        input_charsizes->letter_size_array.push_back(input_size);
     }
 
 }
@@ -418,9 +436,9 @@ void ChippyBoot::removeCharsizeRedundancies(charsizes* input_charsizes){
     input_charsizes->text = lettersInString(input_charsizes->text);
 }
 
-void ChippyBoot::incrementCharsizeIndex(charsizes* charsizes){
-    charsizes->index++;
-}
+//void ChippyBoot::incrementCharsizeIndex(charsizes* charsizes){
+ //   charsizes->index++;
+//}
 
 std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts, uint8_t delay){
     //initialize vars
@@ -431,9 +449,9 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     //initialize jump point as first instruction
     bootup_memory.insert(bootup_memory.begin() + PC++, getFirstDrawingByte(drawing_location));
     bootup_memory.insert(bootup_memory.begin() + PC++, getSecondDrawingByte(drawing_location));
+
+    
     //Put characters in memory
-    //std::cout << "Size: " << texts.size() << std::endl;
-    //std::string all_letters = "";
     for(int i = 0; i < texts.size(); i++){
         //contains all letters to be put in memory
         //all_letters += texts[i].text;
@@ -445,24 +463,38 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
         }
         
     }
+    //TODO: Make system that will remove redundancies in shared letters across the same size
+
+    //Hello(4) and World(3) would be Helo World
+    std::cout << charsizes.text << std::endl;
+    for(int i = 0; i < charsizes.letter_size_array.size(); i++){
+        std::cout << charsizes.letter_size_array[i] << std::endl;
+    }
     //isolate all unique characters
     //std::string letters = lettersInString(all_letters);
-    removeCharsizeRedundancies(&charsizes);
+    //removeCharsizeRedundancies(&charsizes);
+
+    //For all unique letters
+    std::cout << "Size: " << charsizes.text.size() << std::endl;
     for(int i = 0; i < charsizes.text.size(); i++){
-        letterloc_array.push_back(createLetterloc(charsizes.text[charsizes.index],PC));
+        //Connect a letter and its size to a location in memory
+        letterloc_array.push_back(createLetterloc(charsizes.text[i], PC, charsizes.letter_size_array[i]));
+        std::cout << letterloc_array[i].letter << std::endl;
+        std::cout << letterloc_array[i].size << std::endl;
         //Gets the letter's corresponding hex characters
-        std::vector<uint8_t> letter_hex_array = letterToHex(charsizes.text[charsizes.index], sizeToBitmap(charsizes.letter_size[charsizes.index]));
-        incrementCharsizeIndex(&charsizes);
+        std::vector<uint8_t> letter_hex_array = letterToHex(charsizes.text[i], sizeToBitmap(charsizes.letter_size_array[i]));
+        
         //writes every byte to the memory
         for(uint8_t row : letter_hex_array){
             bootup_memory.insert(bootup_memory.begin() + PC++, row);
         }
     }
-
+    debug_printBootupText(bootup_memory);
     //Writes drawing code 
     while(PC < drawing_location){
         bootup_memory.insert(bootup_memory.begin() + PC++, 0x00);
     }
+    //Go through each text
     for(int i = 0; i < texts.size(); i++){
         //Iterate through all letters in a string
         while(texts[i].letter_index < texts[i].text.size()){

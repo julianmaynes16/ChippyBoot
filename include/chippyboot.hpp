@@ -57,14 +57,13 @@ class ChippyBoot{
 
         struct letterloc {
             char letter;
-            int size;
             uint16_t location;
+            int size;
         };
         
         struct charsizes {
             std::string text;
-            std::vector<int> letter_size;
-            int index;
+            std::vector<int> letter_size_array;
         };
         
 
@@ -76,7 +75,7 @@ class ChippyBoot{
 
         static void incrementCharsizeIndex(charsizes* charsizes);
     
-        static letterloc createLetterloc(char letter_input, uint16_t location);
+        static letterloc createLetterloc(char letter_input, uint16_t location, int size);
 
         const static uint8_t rep_digits = 37;
         const static uint8_t num_fonts = 2;
