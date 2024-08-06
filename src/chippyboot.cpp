@@ -343,7 +343,7 @@ uint8_t ChippyBoot::yGet(screentext* text){
     if((text->location == "top_left") || (text->location == "top_right")){
         yloc = 0x01;
     }else if((text->location == "bottom_left") || (text->location == "bottom_right") || (text->location == "bottom_middle")){
-        yloc = 0x1E;
+        yloc = 0x1C;
     } else if(text->location == "middle"){
         yloc = 0x0E;
     }else{
@@ -400,7 +400,7 @@ uint16_t ChippyBoot::getLetterAddress(screentext* text, std::vector<letterloc> l
     for(int i = 0; i < letterloc_array.size(); i++){
         //If the letter specified by the index equals the letter in letterloc, set return address to the letter's program counter
         if((text->text[text->letter_index]) == letterloc_array[i].letter){
-            return_address = letterloc_array[i].location;
+            return_address = letterloc_array[i].location + memory_start;
         }
     }
     incrementLetterIndex(text);
@@ -519,8 +519,8 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     //    bootup_memory.insert(bootup_memory.begin() + PC++, 0x00);
     //}
     //Replace first jump now to where the rest of the data will be. Used to account for many characters
-    bootup_memory[0x00] = getFirstDrawingByte(PC);
-    bootup_memory[0x01] = getSecondDrawingByte(PC);
+    bootup_memory[0x00] = getFirstDrawingByte(PC + memory_start);
+    bootup_memory[0x01] = getSecondDrawingByte(PC + memory_start);
 
     //Go through each text
     for(int i = 0; i < texts.size(); i++){
@@ -547,7 +547,7 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     bootup_memory.insert(bootup_memory.begin() + PC++, 0xF5);
     bootup_memory.insert(bootup_memory.begin() + PC++, 0x15);
     //Set register 5 to be whats the delay_register
-    uint16_t jump_point = PC;
+    uint16_t jump_point = PC + memory_start;
     bootup_memory.insert(bootup_memory.begin() + PC++, 0xF5);
     bootup_memory.insert(bootup_memory.begin() + PC++, 0x07);
     // Skip next instruction if delay timer runs out
@@ -571,7 +571,7 @@ std::vector<uint8_t> ChippyBoot::createBootupText(std::vector<screentext> texts,
     return bootup_memory;
 }
 
-void ChippyBoot::loadBootupScreen(uint16_t* memory, std::vector<uint8_t> bootup_text){
+void ChippyBoot::loadBootupScreen(uint8_t memory[4096], std::vector<uint8_t> bootup_text){
     for(int i = 0; i < bootup_text.size(); i++){
         memory[memory_start + i] = bootup_text[i];
     }

@@ -1,3 +1,4 @@
+#include <vector>
 #include <cstdint>
 #include <string>
 
@@ -47,7 +48,7 @@ class ChippyBoot{
          * @param memory The chip8 memory that contains sprites and the rom
          * @param bootup_text Data created by createBootupText()  
          */
-        static void loadBootupScreen(uint16_t* memory, std::vector<uint8_t> bootup_text);
+        static void loadBootupScreen(uint8_t memory[4096], std::vector<uint8_t> bootup_text);
         /**
          * @brief Displays the Bootup screen when execution starts and handles exiting
          * @param program_counter Chip8 program counter to be able to transition from bootup screen to a chip8 game
