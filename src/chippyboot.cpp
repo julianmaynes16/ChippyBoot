@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <chippyboot.hpp>
 
@@ -328,11 +329,15 @@ uint8_t ChippyBoot::xGet(screentext* text){
     uint8_t xloc;
     if((text->location == "top_left") || (text->location == "bottom_left")){
         //shifts x coordinate to print multiple letters with a 1 pixel gap
-        xloc = 0x01 + (text->letter_index * text->size) + 1;
+        xloc = 0x01 + (text->letter_index * text->size) + (1 + text->letter_index);
     }else if((text->location == "top_right") || (text->location == "bottom_right")){
-        xloc = 0x28 + (text->letter_index * text->size) + 1;
+        xloc = 0x28 + (text->letter_index * text->size) + (1 + text->letter_index);
     } else{
-        xloc = 0x18 + (text->letter_index * text->size) + 1;
+        if((text->size % 2) == 0){ // even font size 
+            xloc = std::round((-2.547 * text->text.length()) + 32.6) + (text->letter_index * text->size) + (1 + text->letter_index);
+        }else{ // odd font size
+            xloc = (32 - std::ceil(text->size / 3) - ((text->text.length() - 1) * (std::ceil(text->size / 3) + 1)) + (text->letter_index * text->size) + (1 + text->letter_index));
+        }
     }
     return xloc;
 }
@@ -399,10 +404,11 @@ uint16_t ChippyBoot::getLetterAddress(screentext* text, std::vector<letterloc> l
     //Goes through each item in letterloc array
     for(int i = 0; i < letterloc_array.size(); i++){
         //If the letter specified by the index equals the letter in letterloc, set return address to the letter's program counter
-        if((text->text[text->letter_index]) == letterloc_array[i].letter){
+        if(((text->text[text->letter_index]) == letterloc_array[i].letter) && (text->size == letterloc_array[i].size)){
             return_address = letterloc_array[i].location + memory_start;
         }
     }
+    //increments the letter index to allow the next letter to be printed
     incrementLetterIndex(text);
     return return_address;
 }
