@@ -331,10 +331,13 @@ uint8_t ChippyBoot::xGet(screentext* text){
         //shifts x coordinate to print multiple letters with a 1 pixel gap
         xloc = 0x01 + (text->letter_index * text->size) + (1 + text->letter_index);
     }else if((text->location == "top_right") || (text->location == "bottom_right")){
-        xloc = 0x28 + (text->letter_index * text->size) + (1 + text->letter_index);
+        //xloc = 0x28 + (text->letter_index * text->size) + (1 + text->letter_index);
+        xloc = (61 - (text->size - 3) - ((text->size + 1) * (text->text.length() - 1)));
     } else{
         if((text->size % 2) == 0){ // even font size 
-            xloc = std::round((-2.547 * text->text.length()) + 32.6) + (text->letter_index * text->size) + (1 + text->letter_index);
+        //If text length is odd, make it half the size plus one, if even half the size
+            int middle_alternate = (text->text.length() % 2) ? ((text->size / 2) + 1 ) : (text->size / 2);
+            xloc = (32 - std::round(text->size / 3) - ((text->text.length() - 1) * middle_alternate))
         }else{ // odd font size
             xloc = (32 - std::ceil(text->size / 3) - ((text->text.length() - 1) * (std::ceil(text->size / 3) + 1)) + (text->letter_index * text->size) + (1 + text->letter_index));
         }
