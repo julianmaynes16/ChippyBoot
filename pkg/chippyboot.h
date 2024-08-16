@@ -25,7 +25,7 @@ class ChippyBoot{
 
         /**
          * @brief Creates the screen data to be used on bootup, waiting for a delay before reading ROM
-         * @param texts An array of textloc objects containing text and their desired locations
+         * @param texts An array of screentext objects containing text and their desired locations
          * @param delay The amount of cycles before bootup ends and the actual ROM executess (0-255)
          * @return An array of 8 bit integers and of size 4096 (currently) that holds the data to be executed to show bootup screen 
          */

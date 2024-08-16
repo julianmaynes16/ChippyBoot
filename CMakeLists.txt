@@ -3,8 +3,13 @@ project(ChippyBoot)
 
 set(SOURCES src/chippyboot.cpp)
 
-set(HEADERS include/chippyboot.hpp)
+set(HEADERS include/chippyboot.h)
 
-add_library(ChippyBoot SHARED ${SOURCES} )
+add_library(ChippyBootDll SHARED ${SOURCES})
+set_target_properties(ChippyBootDll PROPERTIES OUTPUT_NAME ChippyBoot)
 
-target_include_directories(ChippyBoot PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(ChippyBootLib STATIC ${SOURCES} ${HEADERS})
+set_target_properties(ChippyBootLib PROPERTIES OUTPUT_NAME ChippyBoot)
+
+target_include_directories(ChippyBootDll PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(ChippyBootLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
