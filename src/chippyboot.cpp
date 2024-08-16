@@ -329,15 +329,35 @@ uint8_t ChippyBoot::xGet(screentext* text){
     uint8_t xloc;
     if((text->location == "top_left") || (text->location == "bottom_left")){
         //shifts x coordinate to print multiple letters with a 1 pixel gap
-        xloc = 0x01 + (text->letter_index * text->size) + (1 + text->letter_index);
+        xloc = 0x00 + (text->letter_index * text->size) + (1 + text->letter_index);
     }else if((text->location == "top_right") || (text->location == "bottom_right")){
         //xloc = 0x28 + (text->letter_index * text->size) + (1 + text->letter_index);
-        xloc = (61 - (text->size - 3) - ((text->size + 1) * (text->text.length() - 1)));
+        //xloc = (61 - (text->size - 3) - ((text->size + 1) * (text->text.length() - 1)));
+        //Even font size
+        xloc = (60 - (text->size - 3) - ((text->text.length() - 1) * (text->size + 1)) + (text->letter_index * text->size) + (1 + text->letter_index));
     } else{
         if((text->size % 2) == 0){ // even font size 
         //If text length is odd, make it half the size plus one, if even half the size
-            int middle_alternate = (text->text.length() % 2) ? ((text->size / 2) + 1 ) : (text->size / 2);
-            xloc = (32 - std::round(text->size / 3) - ((text->text.length() - 1) * middle_alternate))
+            //int middle_alternate = (text->text.length() % 2) ? ((text->size / 2) + 1 ) : (text->size / 2);
+            std::vector<int> middle_array_alternate;
+            for(int i = 0; i <= text->text.length(); i++){
+                if((i ==0) || (i == 1)){
+                    middle_array_alternate.push_back(0);
+                }else{
+                    if((i % 2) == 0){
+                        middle_array_alternate.push_back(text->text.length() / 2);
+                    }else{
+                        middle_array_alternate.push_back((text->text.length() / 2) + 1);
+                    }
+                }
+            }
+            int letter_one_count_pos = 32 - (0.5 * text->size);
+            int difference_summation = 0;
+            for(int i = 2; i <= text->text.length(); i++){
+                difference_summation += middle_array_alternate[i];
+            }
+            //xloc = (32 - std::round(text->size / 3) - ((text->text.length() - 1) * middle_alternate));
+            xloc = letter_one_count_pos - difference_summation + (text->letter_index * text->size) + (1 + text->letter_index);
         }else{ // odd font size
             xloc = (32 - std::ceil(text->size / 3) - ((text->text.length() - 1) * (std::ceil(text->size / 3) + 1)) + (text->letter_index * text->size) + (1 + text->letter_index));
         }
@@ -349,11 +369,11 @@ uint8_t ChippyBoot::xGet(screentext* text){
 uint8_t ChippyBoot::yGet(screentext* text){
     uint8_t yloc;
     if((text->location == "top_left") || (text->location == "top_right")){
-        yloc = 0x01;
+        yloc = 0x00;
     }else if((text->location == "bottom_left") || (text->location == "bottom_right") || (text->location == "bottom_middle")){
-        yloc = 0x1C;
+        yloc = 29 - (text->size - 3);
     } else if(text->location == "middle"){
-        yloc = 0x0E;
+        yloc = 15 - (text->size - 3);
     }else{
         yloc = 0x14;
     }
