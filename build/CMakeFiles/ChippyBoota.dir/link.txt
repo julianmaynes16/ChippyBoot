@@ -1,0 +1,2 @@
+/usr/bin/ar qc pkg/libChippyBoot.a CMakeFiles/ChippyBoota.dir/src/chippyboot.cpp.o
+/usr/bin/ranlib pkg/libChippyBoot.a

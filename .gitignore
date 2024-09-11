@@ -1,4 +1,3 @@
 *.exe
 Makefile
 src/main.cpp
-build/

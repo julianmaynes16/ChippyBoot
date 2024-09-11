@@ -1,0 +1,4 @@
+/home/thela/Documents/ChippyBoot/build/CMakeFiles/ChippyBootDll.dir
+/home/thela/Documents/ChippyBoot/build/CMakeFiles/ChippyBoota.dir
+/home/thela/Documents/ChippyBoot/build/CMakeFiles/edit_cache.dir
+/home/thela/Documents/ChippyBoot/build/CMakeFiles/rebuild_cache.dir
