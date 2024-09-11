@@ -1,0 +1,4 @@
+C:/Users/thela/OneDrive/Documents/ChippyBoot/win_build/CMakeFiles/ChippyBootDll.dir
+C:/Users/thela/OneDrive/Documents/ChippyBoot/win_build/CMakeFiles/ChippyBoota.dir
+C:/Users/thela/OneDrive/Documents/ChippyBoot/win_build/CMakeFiles/ALL_BUILD.dir
+C:/Users/thela/OneDrive/Documents/ChippyBoot/win_build/CMakeFiles/ZERO_CHECK.dir

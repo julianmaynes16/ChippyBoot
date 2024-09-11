@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\thela\OneDrive\Documents\ChippyBoot\src\chippyboot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\thela\OneDrive\Documents\ChippyBoot\include\chippyboot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\thela\OneDrive\Documents\ChippyBoot\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{49DDFCEA-A6A7-3C57-86DF-6515BD0C7212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8346DB58-10F9-3FE0-BB0F-E44CAAE64E00}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
